@@ -1,6 +1,12 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -9,17 +15,21 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.WindowConstants;
 
+import model.TableModel;
+import model.ToDoItem;
+
 public class ProFrame extends JFrame {
 
     static int width = 800;
     static int height = 600;
+    private TableModel model;
 
-    public static void main(String... args){
+    public static void main(String... args) {
         ProFrame proFrame = new ProFrame();
         proFrame.init(width, height);
     }
 
-    private void init(int width, int height){
+    private void init(int width, int height) {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
         setSize(width, height);
@@ -32,10 +42,64 @@ public class ProFrame extends JFrame {
         button.setText("Přidat poznámku");
         toolbar.add(button);
 
-        JTable table = new JTable();
+        JButton saveButton = new JButton();
+        saveButton.setText("Uložit");
+        toolbar.add(saveButton);
+
+        JButton loadButton = new JButton();
+        loadButton.setText("Načíst");
+        toolbar.add(loadButton);
+
+        button.addActionListener(action -> {
+            ToDoItem item = new ToDoItem("Test obsah");
+            model.add(item);
+        });
+        saveButton.addActionListener(action -> {
+            saveItems();
+        });
+        loadButton.addActionListener(action -> {
+            loadItems();
+        });
+
+        model = new TableModel();
+
+        JTable table = new JTable(model);
         add(new JScrollPane(table), BorderLayout.CENTER);
         pack();
+
+        setLocationRelativeTo(null); //center okna na monitoru
     }
 
+    private void saveItems() {
+        try {
+            ObjectOutputStream stream =
+                    new ObjectOutputStream(
+                            new FileOutputStream(
+                                    new File("our.db")
+                            )
+                    );
+            stream.writeObject(model.getItems());
+            stream.flush();
+            stream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadItems() {
+        try {
+            ObjectInputStream stream = new ObjectInputStream(
+                    new FileInputStream(
+                            new File("our.db")
+                    )
+            );
+            List<ToDoItem> items = (List<ToDoItem>) stream.readObject();
+            stream.close();
+            model.setItems(items);
+            model.fireTableDataChanged();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }
