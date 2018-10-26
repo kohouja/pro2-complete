@@ -1,19 +1,28 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
 import model.TableModel;
@@ -23,7 +32,7 @@ import rss.RssParser;
 
 public class ProFrame extends JFrame {
 
-    static int width = 800;
+    static int width = 1400;
     static int height = 600;
     private TableModel model;
 
@@ -38,8 +47,11 @@ public class ProFrame extends JFrame {
         setSize(width, height);
         setTitle("Programování 2");
 
+        setLayout(new BoxLayout(getContentPane(), 1));
         JPanel toolbar = new JPanel();
         add(toolbar, BorderLayout.NORTH);
+        JPanel toolbar2 = new JPanel();
+        add(toolbar2);
 
         JButton button = new JButton();
         button.setText("Přidat poznámku");
@@ -53,6 +65,7 @@ public class ProFrame extends JFrame {
         loadButton.setText("Načíst");
         toolbar.add(loadButton);
 
+
         button.addActionListener(action -> {
             ToDoItem item = new ProDialog().getItem();
             model.add(item);
@@ -64,6 +77,14 @@ public class ProFrame extends JFrame {
             loadItems();
         });
 
+        JTextField field = new JTextField("Vaše_URL_ADRESA");
+        JButton loadUrlBtn = new JButton("Načíst URL");
+        toolbar2.add(field);
+        toolbar2.add(loadUrlBtn);
+        loadUrlBtn.addActionListener(action -> {
+            addFeed(field.getText());
+        });
+
         model = new TableModel();
 
         JTable table = new JTable(model);
@@ -72,23 +93,34 @@ public class ProFrame extends JFrame {
 
         setLocationRelativeTo(null); //center okna na monitoru
 
-        parse();
+        //parse();
+        readFeeds();
     }
 
-    private void parse(){
+    private void parse(String url) {
         try {
 
+            /*
             RssParser parser
                     = new RssParser(
                     new FileInputStream(
                             new File("download.xml")));
+                            */
+
+            //String url = "http://www.eurofotbal.cz/feed/rss/premier-league/";
+
+            URLConnection connection = new URL(url).openConnection();
+            connection.connect();
+            InputStream stream = connection.getInputStream();
+            RssParser parser = new RssParser(stream);
 
             List<RssItem> rssItems = parser.parseItems();
             for (RssItem rssItem : rssItems) {
                 System.out.println(rssItem.toString());
             }
+            stream.close();
 
-        } catch (FileNotFoundException e){
+        } catch (Exception e) {
 
         }
     }
@@ -125,4 +157,43 @@ public class ProFrame extends JFrame {
         }
     }
 
+    private void addFeed(String url) {
+        try {
+
+            File file = new File("feed.txt");
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            FileWriter fileWriter = new FileWriter(file, true);
+            BufferedWriter writer = new BufferedWriter(fileWriter);
+
+            writer.write(url);
+            writer.newLine();
+            writer.flush();
+
+        } catch (Exception e) {
+        }
+    }
+
+    private void readFeeds(){ //časem List<String>
+        try {
+            List<String> urls = new ArrayList<>();
+            File file = new File("feed.txt");
+
+            FileReader fileReader = new FileReader(file);
+            BufferedReader reader = new BufferedReader(fileReader);
+
+            String line;
+            while ((line = reader.readLine()) != null){
+                urls.add(line);
+            }
+            for (String url : urls) { //test
+                System.out.println(url);
+            }
+
+        } catch (Exception e){
+
+        }
+    }
 }
