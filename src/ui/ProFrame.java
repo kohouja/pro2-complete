@@ -25,6 +25,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
+import model.FeedItem;
 import model.TableModel;
 import model.ToDoItem;
 import rss.RssItem;
@@ -176,7 +177,7 @@ public class ProFrame extends JFrame {
         }
     }
 
-    private void readFeeds(){ //časem List<String>
+    private void readFeeds() { //časem List<String>
         try {
             List<String> urls = new ArrayList<>();
             File file = new File("feed.txt");
@@ -185,14 +186,49 @@ public class ProFrame extends JFrame {
             BufferedReader reader = new BufferedReader(fileReader);
 
             String line;
-            while ((line = reader.readLine()) != null){
+            while ((line = reader.readLine()) != null) {
                 urls.add(line);
             }
             for (String url : urls) { //test
                 System.out.println(url);
             }
 
-        } catch (Exception e){
+        } catch (Exception e) {
+
+        }
+    }
+
+    private List<FeedItem> getAllFeeds() {
+        List<FeedItem> feedItems = new ArrayList<>();
+        try {
+            File file = new File("feedItems.csv");
+            FileReader reader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            bufferedReader.readLine(); // přeskočit první řádek
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                feedItems.add(FeedItem.parseFromCSV(line));
+            }
+        } catch (Exception e) {
+
+        }
+        return feedItems;
+    }
+
+    private void saveAllFeeds(List<FeedItem> items) {
+        try {
+            File file = new File("feedItems.csv");
+            FileWriter writer = new FileWriter(file);
+            BufferedWriter bufferedWriter = new BufferedWriter(writer);
+            bufferedWriter.write("url;addedMillis;shouldShow;alias");
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+            for (FeedItem item : items){
+                bufferedWriter.write(item.toString());
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
+            }
+        } catch (Exception e) {
 
         }
     }
