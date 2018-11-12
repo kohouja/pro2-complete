@@ -7,6 +7,16 @@ public class FeedItem {
     boolean shouldShow;
     String alias;
 
+    private FeedItem() {
+    }
+
+    public FeedItem(String url) {
+        this.url = url;
+        this.shouldShow = true;
+        this.addedMillis = System.currentTimeMillis();
+        this.alias = "Alias todo";
+    }
+
     public String getUrl() {
         return url;
     }
@@ -45,7 +55,7 @@ public class FeedItem {
                 url, addedMillis, shouldShow, alias);
     }
 
-    public static FeedItem parseFromCSV(String line){
+    public static FeedItem parseFromCSV(String line) {
         // fixme ošetřit počet hodnot
         String[] values = line.split(";");
         FeedItem feedItem = new FeedItem();
