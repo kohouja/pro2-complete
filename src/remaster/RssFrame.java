@@ -14,8 +14,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.WindowConstants;
 
+import model.FeedItem;
 import rss.RssItem;
 import rss.RssParser;
+import utils.Utils;
 
 public class RssFrame extends JFrame {
 
@@ -35,7 +37,12 @@ public class RssFrame extends JFrame {
         JPanel controlPanel = new JPanel(new BorderLayout());
         JButton editButton = new JButton("Edit");
         editButton.addActionListener(action -> {
-            new TableDialog().open();
+            // načíst feed items
+            List<FeedItem> items = Utils.getAllFeeds();
+            // upravíme v dialogu
+            new TableDialog(items).open();
+            // a změny uložit
+            Utils.saveAllFeeds(items);
         });
         controlPanel.add(editButton, BorderLayout.WEST);
 
