@@ -20,6 +20,14 @@ public class FeedTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
+    public void remove(int position) {
+        if (position < 0 || position >= items.size()) {
+            return;
+        }
+        items.remove(position);
+        fireTableDataChanged();
+    }
+
     public void setItems(List<FeedItem> items) {
         this.items = items;
     }

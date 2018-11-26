@@ -2,6 +2,7 @@ package remaster;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -35,8 +36,12 @@ public class TableDialog extends JDialog {
         toolbar.add(text, BorderLayout.CENTER);
         text.setPreferredSize(new Dimension(300, 30));
 
+        JPanel btnLayout = new JPanel(new FlowLayout());
         JButton addBtn = new JButton("Přidat");
-        toolbar.add(addBtn, BorderLayout.WEST);
+        JButton rmvBtn = new JButton("Smazat");
+        btnLayout.add(addBtn);
+        btnLayout.add(rmvBtn);
+        toolbar.add(btnLayout, BorderLayout.WEST);
         addBtn.addActionListener(action -> {
             model.add(new FeedItem(text.getText()));
             text.setText("");
@@ -48,6 +53,9 @@ public class TableDialog extends JDialog {
         model.setItems(feedItems);
         JTable table = new JTable(model);
         add(new JScrollPane(table), BorderLayout.CENTER);
+        rmvBtn.addActionListener(a -> {
+            model.remove(table.getSelectedRow());
+        });
 
         finishBtn.addActionListener(action -> {
             setVisible(false);
