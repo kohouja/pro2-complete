@@ -8,7 +8,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -31,7 +30,7 @@ public class RssFrame extends JFrame {
         frame.init(800, 600);
     }
 
-    public void init(int width, int height){
+    public void init(int width, int height) {
         setSize(width, height);
         setTitle("Rss čtečka");
         setLocationRelativeTo(null); //center
@@ -46,6 +45,8 @@ public class RssFrame extends JFrame {
             new TableDialog(items).open();
             // a změny uložit
             Utils.saveAllFeeds(items);
+
+            loadCards(); // fixme - toto
         });
         controlPanel.add(editButton, BorderLayout.WEST);
 
@@ -53,11 +54,8 @@ public class RssFrame extends JFrame {
 
         content = new JPanel(new WrapLayout());
 
-        // todo - async
+        // todo - async ?
         loadCards();
-        //test(); // fixme - bude nutno po přidávání cardviews volat refresh
-        // ui refresh v případě po přidání do JScrollPane
-        // JScrollPane.doLayout?
 
         add(new JScrollPane(content), BorderLayout.CENTER);
 
@@ -65,30 +63,29 @@ public class RssFrame extends JFrame {
 
     }
 
-    private void loadCards(){
+    private void loadCards() { // TODO async
+        content.removeAll();
         List<RssItem> list = loadItems();
         for (RssItem rssItem : list) {
             content.add(new CardView(rssItem));
         }
+        content.updateUI();
     }
 
-    private List<RssItem> loadItems(){
+    private List<RssItem> loadItems() {
         List<RssItem> list = new ArrayList<>();
 
         List<FeedItem> allFeeds = Utils.getAllFeeds();
         for (FeedItem feed : allFeeds) {
-            if (feed.isShouldShow()){
+            if (feed.isShouldShow()) {
                 loadFromFeedItem(list, feed);
             }
         }
 
-        Collections.sort(list, new Comparator<RssItem>() {
-            @Override
-            public int compare(RssItem o1, RssItem o2) {
-                long millis1 = Utils.getMillisFromDateString(o1.getPubDate());
-                long millis2 = Utils.getMillisFromDateString(o2.getPubDate());
-                return Long.compare(millis2, millis1);
-            }
+        Collections.sort(list, (o1, o2) -> {
+            long millis1 = Utils.getMillisFromDateString(o1.getPubDate());
+            long millis2 = Utils.getMillisFromDateString(o2.getPubDate());
+            return Long.compare(millis2, millis1);
         });
         // todo - sorting - comparator
         // todo - filtry - nastavitelné
@@ -96,9 +93,9 @@ public class RssFrame extends JFrame {
         return list;
     }
 
-    private void loadFromFeedItem(List<RssItem> items, FeedItem item){
+    private void loadFromFeedItem(List<RssItem> items, FeedItem item) {
         // validace URL
-        if (!item.getUrl().contains("http")){
+        if (!item.getUrl().contains("http")) {
             return;
         }
 
@@ -106,13 +103,13 @@ public class RssFrame extends JFrame {
             URLConnection conn = new URL(item.getUrl()).openConnection();
             items.addAll(new RssParser(conn.getInputStream()).parseItems());
 
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Deprecated
-    private void test(){
+    private void test() {
         try {
             /*
             URLConnection conn = new URL("").openConnection();
@@ -127,7 +124,7 @@ public class RssFrame extends JFrame {
                 content.add(new CardView(item));
             }
 
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
