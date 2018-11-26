@@ -4,6 +4,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ public class RssParser {
             DefaultHandler handler = new DefaultHandler() {
 
                 RssItem item;
-                boolean title, link, description;
+                boolean title, link, description, pubDate;
 
                 @Override
                 public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
@@ -42,6 +43,9 @@ public class RssParser {
                     }
                     if (qName.equalsIgnoreCase("description") && item != null) {
                         description = true;
+                    }
+                    if (qName.equalsIgnoreCase("pubdate") && item != null){
+                        pubDate = true;
                     }
                     super.startElement(uri, localName, qName, attributes);
                 }
@@ -68,6 +72,10 @@ public class RssParser {
                         item.setDescription(new String(ch, start, length));
                         description = false;
                     }
+                    if (pubDate){
+                        item.setPubDate(new String(ch, start, length));
+                        pubDate = false;
+                    }
                     super.characters(ch, start, length);
                 }
             };
@@ -77,6 +85,13 @@ public class RssParser {
         } catch (Exception e) {
             //ignored
         } finally {
+            if (inputStream != null){
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             return items;
         }
 

@@ -6,6 +6,9 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -50,7 +53,9 @@ public class RssFrame extends JFrame {
 
         content = new JPanel(new WrapLayout());
 
-        test(); // fixme - bude nutno po přidávání cardviews volat refresh
+        // todo - async
+        loadCards();
+        //test(); // fixme - bude nutno po přidávání cardviews volat refresh
         // ui refresh v případě po přidání do JScrollPane
         // JScrollPane.doLayout?
 
@@ -60,6 +65,53 @@ public class RssFrame extends JFrame {
 
     }
 
+    private void loadCards(){
+        List<RssItem> list = loadItems();
+        for (RssItem rssItem : list) {
+            content.add(new CardView(rssItem));
+        }
+    }
+
+    private List<RssItem> loadItems(){
+        List<RssItem> list = new ArrayList<>();
+
+        List<FeedItem> allFeeds = Utils.getAllFeeds();
+        for (FeedItem feed : allFeeds) {
+            if (feed.isShouldShow()){
+                loadFromFeedItem(list, feed);
+            }
+        }
+
+        Collections.sort(list, new Comparator<RssItem>() {
+            @Override
+            public int compare(RssItem o1, RssItem o2) {
+                long millis1 = Utils.getMillisFromDateString(o1.getPubDate());
+                long millis2 = Utils.getMillisFromDateString(o2.getPubDate());
+                return Long.compare(millis2, millis1);
+            }
+        });
+        // todo - sorting - comparator
+        // todo - filtry - nastavitelné
+
+        return list;
+    }
+
+    private void loadFromFeedItem(List<RssItem> items, FeedItem item){
+        // validace URL
+        if (!item.getUrl().contains("http")){
+            return;
+        }
+
+        try {
+            URLConnection conn = new URL(item.getUrl()).openConnection();
+            items.addAll(new RssParser(conn.getInputStream()).parseItems());
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Deprecated
     private void test(){
         try {
             /*

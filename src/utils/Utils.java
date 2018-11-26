@@ -5,8 +5,14 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import model.FeedItem;
 
@@ -47,5 +53,17 @@ public class Utils {
             e.printStackTrace();
         }
         return feedItems;
+    }
+
+    public static long getMillisFromDateString(String pubDate){
+        SimpleDateFormat format =
+                new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
+        try {
+            Date date = format.parse(pubDate);
+            return date.getTime();
+        } catch (ParseException e){
+            e.printStackTrace();
+            return 0;
+        }
     }
 }

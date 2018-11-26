@@ -2,7 +2,9 @@ package rss;
 
 public class RssItem {
 
-    private String title, link, description;
+    private String title, link, description, pubDate;
+
+    //<pubDate>Mon, 26 Nov 2018 08:10:36 +0100</pubDate>
 
     public String getTitle() {
         return title;
@@ -26,6 +28,14 @@ public class RssItem {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getPubDate() {
+        return pubDate;
+    }
+
+    public void setPubDate(String pubDate) {
+        this.pubDate = pubDate;
     }
 
     @Override
