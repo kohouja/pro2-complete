@@ -101,7 +101,11 @@ public class RssFrame extends JFrame {
 
         try {
             URLConnection conn = new URL(item.getUrl()).openConnection();
-            items.addAll(new RssParser(conn.getInputStream()).parseItems());
+            List<RssItem> nowItems = new RssParser(conn.getInputStream()).parseItems();
+            for (RssItem nowItem : nowItems){
+                nowItem.setFeedItem(item);
+            }
+            items.addAll(nowItems);
 
         } catch (Exception e) {
             e.printStackTrace();
