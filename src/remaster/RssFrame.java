@@ -25,6 +25,23 @@ public class RssFrame extends JFrame {
 
     private JPanel content;
 
+
+    /*
+        Zápočet domácí úkol:
+
+        1) tvorba nového souboru blacklist (txt,CSV,.obj)
+        - v něm bude podle klíče uloženo který článek necheme zobrazovat
+        - vyvoláním popup menu na kartičce přes Nezobrazovat
+        - v místech načítání a filtrování článků, tyto z blacklistu nezobrazovat
+
+        2) filtry - nové dialogové okno s tabulkou (1 sloupec)
+        - slovo - a v načítání článků pokud obsahuje toto slovo,
+        pak článek zobrazujeme, jinak ne...
+     *
+     *
+     */
+
+
     public static void main(String[] args) {
         RssFrame frame = new RssFrame();
         frame.init(800, 600);
