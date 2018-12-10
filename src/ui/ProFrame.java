@@ -94,21 +94,11 @@ public class ProFrame extends JFrame {
 
         setLocationRelativeTo(null); //center okna na monitoru
 
-        //parse();
         readFeeds();
     }
 
     private void parse(String url) {
         try {
-
-            /*
-            RssParser parser
-                    = new RssParser(
-                    new FileInputStream(
-                            new File("download.xml")));
-                            */
-
-            //String url = "http://www.eurofotbal.cz/feed/rss/premier-league/";
 
             URLConnection connection = new URL(url).openConnection();
             connection.connect();
@@ -122,7 +112,7 @@ public class ProFrame extends JFrame {
             stream.close();
 
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 

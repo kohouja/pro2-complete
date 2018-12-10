@@ -80,11 +80,11 @@ public class RssFrame extends JFrame {
 
     }
 
-    private void loadCards() { // TODO async
+    public void loadCards() { // TODO async
         content.removeAll();
         List<RssItem> list = loadItems();
         for (RssItem rssItem : list) {
-            content.add(new CardView(rssItem));
+            content.add(new CardView(rssItem, this));
         }
         content.updateUI();
     }
@@ -129,24 +129,4 @@ public class RssFrame extends JFrame {
         }
     }
 
-    @Deprecated
-    private void test() {
-        try {
-            /*
-            URLConnection conn = new URL("").openConnection();
-            conn.connect();
-            conn.getInputStream();*/
-            InputStream is = new FileInputStream(
-                    new File("download.xml"));
-
-            List<RssItem> items = new RssParser(is).parseItems();
-
-            for (RssItem item : items) {
-                content.add(new CardView(item));
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

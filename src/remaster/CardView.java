@@ -22,7 +22,7 @@ public class CardView extends JPanel {
     final String endHTML = "</p></html>";
     final int maxCharCount = 50;
 
-    public CardView(RssItem item) {
+    public CardView(RssItem item, RssFrame frame) {
         setLayout(new WrapLayout());
         setSize(ITEM_WIDTH, HEIGHT);
         setTitle(item.getTitle());
@@ -42,6 +42,7 @@ public class CardView extends JPanel {
             public void hideFeedSource() {
                 item.getFeedItem().setShouldShow(false);
                 Utils.saveFeedItem(item.getFeedItem());
+                frame.loadCards();
             }
 
             @Override
