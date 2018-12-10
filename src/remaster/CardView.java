@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import rss.RssItem;
+import utils.Utils;
 
 public class CardView extends JPanel {
 
@@ -40,7 +41,7 @@ public class CardView extends JPanel {
             @Override
             public void hideFeedSource() {
                 item.getFeedItem().setShouldShow(false);
-                // TODO uložit
+                Utils.saveFeedItem(item.getFeedItem());
             }
 
             @Override
